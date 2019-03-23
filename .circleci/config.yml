@@ -42,6 +42,8 @@ jobs:
           name: run tests
           command: |
             ./manage.py test
+          environment:
+            SECRET_KEY: test
   build-prod:
     docker:
       - image: docker:18.06.3-ce-git
