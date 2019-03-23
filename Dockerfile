@@ -14,7 +14,6 @@ COPY ./Pipfile /app/Pipfile
 RUN pipenv install --skip-lock --system --dev
 
 COPY . /app
-RUN ./manage.py migrate
-RUN ./configure.sh
 
-CMD ./manage.py runserver 0.0.0.0:8000
+#CMD ./manage.py runserver 0.0.0.0:8000
+ENTRYPOINT ["/app/configure.sh"]
