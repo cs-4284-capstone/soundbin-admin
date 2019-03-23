@@ -5,3 +5,4 @@
 *.pyc
 .gitignore
 README.md
+*.fish
