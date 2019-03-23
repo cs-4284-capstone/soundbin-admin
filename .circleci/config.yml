@@ -16,22 +16,10 @@ jobs:
     steps:
       - checkout
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "Pipfile" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
       - run:
           name: install dependencies
           command: |
-            sudo pipenv install --skip-lock --system --dev
-
-      - save_cache:
-          paths:
-            - /usr/local/lib/python3.7/site-packages/
-          key: v1-dependencies-{{ checksum "Pipfile" }}
+            pipenv install
 
       # run tests!
       # this example uses Django's built-in test-runner
@@ -41,7 +29,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            ./manage.py test
+            pipenv run ./manage.py test
           environment:
             SECRET_KEY: test
   build-prod:
