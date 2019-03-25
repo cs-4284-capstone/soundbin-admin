@@ -1,3 +1,5 @@
+Build Status: [![CircleCI](https://circleci.com/gh/cs-4284-capstone/soundbin-admin/tree/master.svg?style=svg)](https://circleci.com/gh/cs-4284-capstone/soundbin-admin/tree/master)
+
 Dependencies for this project are managed using `pipenv`: https://pipenv.readthedocs.io/en/latest/
 
 * Install `pipenv` on your host.
