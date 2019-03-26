@@ -19,7 +19,7 @@ def get_message(links, config, src_email, dest_email):
 
     message += f'To: {dest_email}\n'
     message += f'From: {config["Email"]["name"]} <{src_email}>\n'
-    message += 'Subject: {config["Email"]["subject"]}\n\n'
+    message += f'Subject: {config["Email"]["subject"]}\n\n'
     message += 'Thank you for purchasing music. Here are the download links:\n\n'
     message += '\n'.join(links)
 
@@ -28,6 +28,7 @@ def get_message(links, config, src_email, dest_email):
 def firefox_send(files):
     """get firefox send links for each file"""
     links = []
+
     for song_file in files:
         args = ['send-cli', song_file]
         firefox_send = subprocess.run(args, capture_output=True)
@@ -75,7 +76,7 @@ def main():
                                           'email_credentials.txt')
 
     with open(email_credentials_file, 'r') as f:
-        src_email = f.readline()
+        src_email = f.readline().strip()
         password = f.readline()
 
     links = links_from_songs(songs, files_config)
