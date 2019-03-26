@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 # Create your views here.
-from .models import Track, Album
+from .models import Track, Album, User
 
 
 def tracks(request):
@@ -42,9 +42,10 @@ def associate(request):
         return HttpResponse('Invalid request type, must be post', status=400)
 
     data = json.loads(request.body)
+    association = User(wallet_id=data['walletid'], email=data['email'])
     print(f'Recieved data: (wallet:{data["walletid"]}, email:{data["email"]})')
 
-    if True:    # TODO: attempt to add to database
-        return HttpResponse('Wallet and email associated', status=200)
-    else:
-        return HttpResponse('Unknown error', status=500)
+    association.save()
+    print(association)
+    return HttpResponse('Wallet and email associated', status=200)
+

@@ -58,3 +58,10 @@ class Track(models.Model):
             "albumId": self.album.id,
             "albumTitle": self.album.title
         }
+
+class User(models.Model):
+    wallet_id = models.CharField(max_length=200)    # didn't find official info
+    email = models.EmailField()
+
+    def __str__(self):
+        return f"({self.id}: {self.email}, {self.wallet_id})"
