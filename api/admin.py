@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Track, Album
+from .models import Track, Album, Purchase, Customer
 
 
 class TrackInline(admin.StackedInline):
@@ -15,3 +15,6 @@ class AlbumAdmin(admin.ModelAdmin):
 
 admin.site.register(Track)
 admin.site.register(Album, AlbumAdmin)
+
+admin.site.register(Purchase)
+admin.site.register(Customer)

@@ -1,0 +1,8 @@
+*.sqlite3
+.git
+.idea
+.env
+*.pyc
+.gitignore
+README.md
+*.fish
