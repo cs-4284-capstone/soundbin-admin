@@ -49,3 +49,21 @@ def associate(request):
     print(association)
     return HttpResponse('Wallet and email associated', status=200)
 
+@csrf_exempt
+def add_transaction(request, wallet_id, songs):
+    """
+    Process the purchase of songs/albums.
+
+    Songs format is a list of comma separated songs and comma separated, with a
+    pipe as a divider.
+
+    Example: "1,2,3|4,5,6" where 1,2,3 are purchased songs and 4,5,6 are
+    purchased albums.
+
+    This function will currently send an email automatically, but eventually
+    it will aggregate transactions and group them into one email.
+    """
+    pass
+
+def send_songs(request):
+    pass
