@@ -9,5 +9,5 @@ urlpatterns = [
     path('albums/', views.albums, name='albums-all'),
     path('albums/<int:id>', views.album, name='album-single'),
 
-    path('associate/', views.associate, name='associate-user')
+    path('customers/new', views.customer_new, name='customer-new'),
 ]

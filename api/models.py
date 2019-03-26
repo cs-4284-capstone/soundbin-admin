@@ -41,7 +41,8 @@ class Track(models.Model):
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     runtime_minutes = models.IntegerField(default=0)
     runtime_seconds = models.IntegerField(default=0)
-    #file = models.FileField()
+
+    # file = models.FileField()
 
     def __str__(self):
         return f"{self.title} ({self.album.title})"
@@ -58,3 +59,21 @@ class Track(models.Model):
             "albumId": self.album.id,
             "albumTitle": self.album.title
         }
+
+
+class Customer(models.Model):
+    email = models.CharField(max_length=256)
+    walletid = models.CharField(max_length=32)  # TODO: i forgot how long this was
+
+    def __str__(self):
+        return self.email
+
+    def to_json(self):
+        return {
+            "email": self.email,
+            "walletid": self.walletid
+        }
+
+
+def customer_from_json(json_dict):
+    return Customer(email=json_dict['email'], walletid=json_dict['walletid'])

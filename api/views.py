@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 # Create your views here.
-from .models import Track, Album
+from .models import Track, Album, Customer, customer_from_json
 
 
 def tracks(request):
@@ -35,16 +35,35 @@ def album(request, id):
     print(body)
     return JsonResponse(body)
 
+
 @csrf_exempt
-def associate(request):
+def customer_new(request):
     if request.method != 'POST':
-        print('Invalid non-post call to associate')
-        return HttpResponse('Invalid request type, must be post', status=400)
+        return HttpResponse('Invalid request type, must be POST', status=400)
 
-    data = json.loads(request.body)
-    print(f'Recieved data: (wallet:{data["walletid"]}, email:{data["email"]})')
-
-    if True:    # TODO: attempt to add to database
-        return HttpResponse('Wallet and email associated', status=200)
+    try:
+        data = json.loads(request.body)
+        customer = customer_from_json(data)
+        customer.save()
+    except json.decoder.JSONDecodeError:
+        error = {
+            "result": "error",
+            "type": "JSONDecoderError",
+            "message": "Request contained improperly-formatted JSON.",
+            "status": 400
+        }
+        return JsonResponse(error, status=error['status'])
+    except KeyError:
+        error = {
+            "result": "error",
+            "type": "KeyError",
+            "message": "The following keys are required: [email, walletid]",
+            "status": 400
+        }
+        return JsonResponse(error, status=error['status'])
     else:
-        return HttpResponse('Unknown error', status=500)
+        ret = {
+            "result": "ok",
+            "body": customer.to_json()
+        }
+        return JsonResponse(ret, status=201)
