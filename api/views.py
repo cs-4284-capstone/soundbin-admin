@@ -14,6 +14,10 @@ def tracks(request):
     return JsonResponse(body, safe=False)
 
 
+def tracks_top(request):
+    return None
+
+
 def track(request, id):
     q = get_object_or_404(Track, pk=id)
     body = q.to_json()
@@ -78,8 +82,14 @@ def customer_new(request):
 def customer_purchases(request, id):
     # TODO: validation probably needed here
     customer = get_object_or_404(Customer, pk=id)
-    purchases = customer.purchase_set
+    purchases = customer.purchase_set.all()
     return JsonResponse([p.to_json() for p in purchases], safe=False)
+
+
+def customer_email_purchases(request, email: str):
+    customers = Customer.objects.filter(email=email)
+    purchases = [purchase.track.to_json() for customer in customers for purchase in customer.purchase_set.all()]
+    return JsonResponse(purchases, safe=False)
 
 
 @csrf_exempt
