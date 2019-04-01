@@ -1,12 +1,13 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 
 import json
+import subprocess
 
 # Create your views here.
 from .models import *
-
 
 def tracks(request):
     q = Track.objects.all()
@@ -148,4 +149,49 @@ def customer_purchase_new(request, id):
             "result": "ok",
             "body": [p.to_json() for p in purchases]
         }
+
         return JsonResponse(ret, status=201, safe=False)
+
+@csrf_exempt
+def add_transaction(request, wallet_id, purchases):
+    """
+    Process the purchase of songs/albums.
+
+    Songs format is a list of comma separated songs and comma separated, with a
+    pipe as a divider.
+
+    Example: "1,2,3|4,5,6" where 1,2,3 are purchased songs and 4,5,6 are
+    purchased albums.
+
+    This function will currently send an email automatically, but eventually
+    it will aggregate transactions and group them into one email.
+    """
+    # email to send songs to
+    email = Customer.objects.filter(walletid=wallet_id).last().email
+    
+    songs, albums = purchases.split('|')
+
+    songs = [int(song) for song in songs.split(',')]
+    albums = [int(album) for album in albums.split(',')]
+
+    print(songs)
+    print(albums)
+
+    song_titles = []
+    for song in songs:
+        try:
+            song_title = Track.objects.get(id=song)
+            song_titles.append(song_title.title + '.mp3')
+        except ObjectDoesNotExist:
+            print(f'song of id: {song} does not exist in db')
+
+    print(song_titles)
+
+    args = ["./api/song_emailer/send_song.py", email, '-s', *song_titles]
+    process = subprocess.run(args, capture_output=True)
+    print(process)
+    print(process.stdout)
+    return HttpResponse()
+
+def send_songs(request):
+    pass
