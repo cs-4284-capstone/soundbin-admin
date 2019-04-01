@@ -1,5 +1,6 @@
 .idea
 *.fish
+uploads
 
 ### OSX ###
 .DS_Store

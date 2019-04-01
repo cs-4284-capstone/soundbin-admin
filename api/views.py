@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -9,6 +10,7 @@ import subprocess
 # Create your views here.
 from .models import *
 
+
 def tracks(request):
     q = Track.objects.all()
     body = [track.to_json() for track in q]
@@ -16,7 +18,11 @@ def tracks(request):
 
 
 def tracks_top(request):
-    return None
+    qs = Purchase.objects.values('track_id')\
+        .order_by('track_id')\
+        .annotate(count=Count('track_id'))
+    body = [q['track_id'] for q in qs]
+    return JsonResponse(body, safe=False)
 
 
 def track(request, id):
@@ -155,18 +161,18 @@ def customer_purchase_new(request, id):
 @csrf_exempt
 def add_transaction(request, wallet_id, purchases):
     """
-    Process the purchase of songs/albums.
+    Process the purchase of tracks/albums.
 
-    Songs format is a list of comma separated songs and comma separated, with a
+    Songs format is a list of comma separated tracks and comma separated, with a
     pipe as a divider.
 
-    Example: "1,2,3|4,5,6" where 1,2,3 are purchased songs and 4,5,6 are
+    Example: "1,2,3|4,5,6" where 1,2,3 are purchased tracks and 4,5,6 are
     purchased albums.
 
     This function will currently send an email automatically, but eventually
     it will aggregate transactions and group them into one email.
     """
-    # email to send songs to
+    # email to send tracks to
     email = Customer.objects.filter(walletid=wallet_id).last().email
     
     songs, albums = purchases.split('|')

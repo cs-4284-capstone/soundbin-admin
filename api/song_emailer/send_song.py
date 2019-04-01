@@ -61,9 +61,9 @@ def main():
     config.read(config_filename)
 
     # parse command line arguments
-    parser = argparse.ArgumentParser(description='Send purchased songs to an email')
-    parser.add_argument('email', help='email address to which songs are sent')
-    parser.add_argument('-s', dest='songs', nargs='+', help='song or songs to send')
+    parser = argparse.ArgumentParser(description='Send purchased tracks to an email')
+    parser.add_argument('email', help='email address to which tracks are sent')
+    parser.add_argument('-s', dest='tracks', nargs='+', help='song or tracks to send')
     args = parser.parse_args()
 
     dest_email = args.email

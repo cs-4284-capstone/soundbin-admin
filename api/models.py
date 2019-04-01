@@ -2,6 +2,14 @@ from django.db import models
 from django.utils import timezone
 
 
+def art_path(album, filename: str) -> str:
+    return f"uploads/albumart/{album.id}.png"
+
+
+def track_path(track, filename: str) -> str:
+    return f"uploads/tracks/{track.album_id}/{track.id}.mp3"
+
+
 class Album(models.Model):
     title = models.CharField(max_length=200)
     price = models.FloatField(default=5.99)
@@ -9,6 +17,8 @@ class Album(models.Model):
     releaseDate = models.DateField()
     runtime_minutes = models.IntegerField(default=0)
     runtime_seconds = models.IntegerField(default=0)
+
+    album_art = models.ImageField(default="uploads/albumaart/default.png", upload_to=art_path)
 
     def __str__(self):
         return f"{self.title} ({self.releaseDate.year})"
@@ -42,7 +52,7 @@ class Track(models.Model):
     runtime_minutes = models.IntegerField(default=0)
     runtime_seconds = models.IntegerField(default=0)
 
-    # file = models.FileField()
+    mp3 = models.FileField(default="uploads/songs/null.mp3", upload_to=track_path)
 
     def __str__(self):
         return f"{self.title} ({self.album.title})"
@@ -59,6 +69,7 @@ class Track(models.Model):
             "albumId": self.album.id,
             "albumTitle": self.album.title
         }
+
 
 class Customer(models.Model):
     email = models.CharField(max_length=256)    # TODO: change to EmailField
