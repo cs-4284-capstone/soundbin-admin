@@ -72,7 +72,7 @@ class Track(models.Model):
 
 
 class Customer(models.Model):
-    email = models.CharField(max_length=256)    # TODO: change to EmailField
+    email = models.EmailField()   # TODO: change to EmailField
     walletid = models.CharField(max_length=32)  # TODO: i forgot how long this was
 
     def __str__(self):
