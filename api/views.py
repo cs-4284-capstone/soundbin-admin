@@ -8,36 +8,73 @@ import json
 import subprocess
 
 # Create your views here.
+from api.song_delivery import send_song
 from .models import *
 
 
 def tracks(request):
+    """
+    :url: api/tracks
+    :methods: GET
+    :return:
+    200 - JSON Array of all tracks
+    """
     q = Track.objects.all()
     body = [track.to_json() for track in q]
     return JsonResponse(body, safe=False)
 
 
 def tracks_top(request):
-    qs = Purchase.objects.values('track_id')\
-        .order_by('track_id')\
-        .annotate(count=Count('track_id'))
+    """
+    :url: api/tracks/top
+    :methods: GET
+    :return:
+    200 - JSON list of the top 10 tracks by total downloads.
+    """
+    qs = Purchase.objects.values('track_id') \
+             .order_by('track_id') \
+             .annotate(count=Count('track_id')) \
+        [:10]
+
     body = [q['track_id'] for q in qs]
     return JsonResponse(body, safe=False)
 
 
 def track(request, id):
+    """
+    :url: api/tracks/<id>
+    :methods: GET
+    :param id: ID of the track to fetch
+    :return:
+    200 - JSON Object representing the track info.
+    404 - If no such track exists.
+    """
     q = get_object_or_404(Track, pk=id)
     body = q.to_json()
     return JsonResponse(body)
 
 
 def albums(request):
+    """
+    :url: api/albums
+    :methods: GET
+    :return:
+    200 - JSON Array of all the albums
+    """
     q = Album.objects.all()
     body = [album.to_json() for album in q]
     return JsonResponse(body, safe=False)
 
 
 def album(request, id):
+    """
+    :url: api/albums/<id>
+    :methods: GET
+    :param id: ID of the album to fetch
+    :return:
+    200 - JSON Object representing the album info.
+    404 - If no such album exists.
+    """
     q = get_object_or_404(Album, pk=id)
     body = q.to_json()
     return JsonResponse(body)
@@ -45,6 +82,15 @@ def album(request, id):
 
 @csrf_exempt
 def customer_new(request):
+    """
+    :url: api/customers/new
+    :methods: POST
+    :post: { email: str, walletid: str }
+    :return:
+    200 - If a customer with the provided email and walletid already exists, along with their internal ID.
+    201 - If no such customer exists, indicates that a new user has been created and returns their ID.
+    400 - JSON encoding error
+    """
     if request.method == 'OPTIONS':
         return HttpResponse("", status=200)
     if request.method != 'POST':
@@ -95,8 +141,8 @@ def customer_purchases(request, id):
 
 def customer_email_purchases(request, email: str):
     customers = Customer.objects.filter(email=email)
-    purchases = [purchase.track.to_json() for customer in customers for purchase in customer.purchase_set.all()]
-    return JsonResponse(purchases, safe=False)
+    purchases = {purchase.track.id for customer in customers for purchase in customer.purchase_set.all()}
+    return JsonResponse(list(purchases), safe=False)
 
 
 @csrf_exempt
@@ -158,6 +204,7 @@ def customer_purchase_new(request, id):
 
         return JsonResponse(ret, status=201, safe=False)
 
+
 @csrf_exempt
 def add_transaction(request, wallet_id, purchases):
     """
@@ -174,7 +221,7 @@ def add_transaction(request, wallet_id, purchases):
     """
     # email to send tracks to
     email = Customer.objects.filter(walletid=wallet_id).last().email
-    
+
     songs, albums = purchases.split('|')
 
     songs = [int(song) for song in songs.split(',')]
@@ -199,5 +246,11 @@ def add_transaction(request, wallet_id, purchases):
     print(process.stdout)
     return HttpResponse()
 
-def send_songs(request):
-    pass
+
+def send_songs(request, purchaseid: int):
+    purchase = get_object_or_404(Purchase, pk=purchaseid)
+    if purchase.status != "unfufilled":
+        return HttpResponse("Purchase already fufilled", status=400)
+
+    link = send_song(purchase)
+    return HttpResponse(link)

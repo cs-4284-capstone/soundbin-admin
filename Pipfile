@@ -10,6 +10,10 @@ django = "==2.1.7"
 gunicorn = "==19.9.0"
 django-cors-headers = "*"
 pillow = "==5.4.1"
+pycryptodome = "*"
+requests = "*"
+requests-toolbelt = "*"
+clint = "*"
 
 [requires]
 python_version = "3.7"
