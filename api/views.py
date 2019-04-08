@@ -205,48 +205,6 @@ def customer_purchase_new(request, id):
         return JsonResponse(ret, status=201, safe=False)
 
 
-@csrf_exempt
-def add_transaction(request, wallet_id, purchases):
-    """
-    Process the purchase of tracks/albums.
-
-    Songs format is a list of comma separated tracks and comma separated, with a
-    pipe as a divider.
-
-    Example: "1,2,3|4,5,6" where 1,2,3 are purchased tracks and 4,5,6 are
-    purchased albums.
-
-    This function will currently send an email automatically, but eventually
-    it will aggregate transactions and group them into one email.
-    """
-    # email to send tracks to
-    email = Customer.objects.filter(walletid=wallet_id).last().email
-
-    songs, albums = purchases.split('|')
-
-    songs = [int(song) for song in songs.split(',')]
-    albums = [int(album) for album in albums.split(',')]
-
-    print(songs)
-    print(albums)
-
-    song_titles = []
-    for song in songs:
-        try:
-            song_title = Track.objects.get(id=song)
-            song_titles.append(song_title.title + '.mp3')
-        except ObjectDoesNotExist:
-            print(f'song of id: {song} does not exist in db')
-
-    print(song_titles)
-
-    args = ["./api/song_emailer/send_song.py", email, '-s', *song_titles]
-    process = subprocess.run(args, capture_output=True)
-    print(process)
-    print(process.stdout)
-    return HttpResponse()
-
-
 def send_songs(request, purchaseid: int):
     purchase = get_object_or_404(Purchase, pk=purchaseid)
     if purchase.status != "unfufilled":

@@ -93,3 +93,4 @@ db.sqlite3
 # Songs
 api/song_emailer/songs/
 SECRET_KEY
+**/email_credentials.txt

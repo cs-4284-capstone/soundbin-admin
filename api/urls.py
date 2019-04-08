@@ -10,9 +10,6 @@ urlpatterns = [
     path('albums/', views.albums, name='albums-all'),
     path('albums/<int:id>', views.album, name='album-single'),
 
-    path('add_transaction/<str:wallet_id>/<str:purchases>', views.add_transaction,
-         name='add_transaction'),
-
     path('purchases/<int:purchaseid>/send', views.send_songs, name='send_songs'),
 
     path('customers/new', views.customer_new, name='customer-new'),
