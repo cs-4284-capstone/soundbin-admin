@@ -19,7 +19,7 @@ from django.urls import path, include
 
 
 def go_to_ui(request):
-    return redirect("/web/")
+    return redirect("/admin")
 
 
 urlpatterns = [

@@ -70,6 +70,11 @@ class Track(models.Model):
             "albumTitle": self.album.title
         }
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            pass
+        super(Track, self).save(*args, **kwargs)
+
 
 class Customer(models.Model):
     email = models.EmailField()   # TODO: change to EmailField
@@ -100,6 +105,7 @@ class Purchase(models.Model):
 
     def to_json(self):
         return {
+            "id": self.id,
             "buyer": self.buyer.to_json(),
             "track": self.track.to_json(),
             "status": self.status
