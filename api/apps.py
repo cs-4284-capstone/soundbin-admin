@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 from django.db.models.signals import post_save
 
-from .signals import on_addsong, on_init
+from .signals import on_addsong
 
 
 class ApiConfig(AppConfig):
@@ -10,4 +10,3 @@ class ApiConfig(AppConfig):
 
     def ready(self):
         post_save.connect(on_addsong, sender='api.Track')
-        on_init()

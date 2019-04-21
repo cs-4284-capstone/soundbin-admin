@@ -4,6 +4,7 @@ RUN apt -y update
 RUN apt -y upgrade
 
 RUN apt install -y sqlite3 libsqlite3-dev
+COPY ./bin /usr/bin
 
 WORKDIR /app
 
