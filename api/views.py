@@ -177,8 +177,14 @@ def customer_purchase_new(request, id):
         if len(data["trackIds"]) == 0:
             raise KeyError
 
-        purchases = [Purchase(buyer_id=id, track_id=trackid, status="unfufilled") for trackid in data["trackIds"]]
-        Purchase.objects.bulk_create(purchases)
+        purchases = []
+        for trackid in data["trackIds"]:
+            purchase = Purchase(buyer_id=id, track_id=trackid, status="unfufilled")
+            purchase.save()
+            purchases.append(purchase)
+
+        #purchases = [Purchase(buyer_id=id, track_id=trackid, status="unfufilled") for trackid in data["trackIds"]]
+        #Purchase.objects.bulk_create(purchases)
 
     except json.decoder.JSONDecodeError:
         error = {
